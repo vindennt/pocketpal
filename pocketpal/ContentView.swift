@@ -40,7 +40,7 @@ struct ContentView: View {
             }
             .pickerStyle(WheelPickerStyle())
             .frame(height: 100)
-            .onChange(of: selectedNumber) { _ in
+            .onChange(of: selectedNumber) { newValue, _ in
                 inputText = ""
                 errorMessage = nil
             }
