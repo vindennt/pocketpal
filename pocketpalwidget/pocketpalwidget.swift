@@ -42,19 +42,44 @@ struct Provider: TimelineProvider {
     }
 }
 
-struct pocketpalwidgetEntryView : View {
+
+@available(iOSApplicationExtension 17.0, *)
+struct pocketpalwidgetEntryView: View {
     var entry: Provider.Entry
 
     var body: some View {
-        VStack {
-            Text("Time:")
-            Text(entry.date, style: .time)
+        let name = String(format: "%03d", entry.id)
 
-            Text("Id:")
-            Text(String(entry.id))
+        Group {
+            if let url = Bundle.main.url(forResource: name, withExtension: "gif"),
+               let data = try? Data(contentsOf: url),
+               let image = UIImage(data: data) {
+                Image(uiImage: image)
+                    .resizable()
+                    .frame(width: 100, height: 100)
+            } else {
+                Text("Missing or unreadable IMG/GIF for \(name)")
+            }
+
         }
+        .containerBackground(.fill.tertiary, for: .widget)
     }
 }
+
+
+//struct pocketpalwidgetEntryView : View {
+//    var entry: Provider.Entry
+//
+//    var body: some View {
+//        VStack {
+//            Text("Time:")
+//            Text(entry.date, style: .time)
+//
+//            Text("Id:")
+//            Text(String(entry.id))
+//        }
+//    }
+//}
 
 struct pocketpalwidget: Widget {
     let kind: String = "pocketpalwidget"

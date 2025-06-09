@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+
+
 @main
 struct pocketpalApp: App {
     var body: some Scene {

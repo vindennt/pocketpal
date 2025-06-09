@@ -33,8 +33,6 @@ let typeColors: [String: TypeStyle] = [
     "Fairy":    TypeStyle(background: Color.pink.opacity(0.6), foreground: .black)
 ]
 
-
-
 struct Pokemon: Codable, Identifiable {
     struct Name: Codable {
         let english: String
@@ -53,7 +51,6 @@ func loadPokemonList() -> [Pokemon] {
     }
     return pokemons.filter { $0.id <= 151 }
 }
-
 
 struct ContentView: View {
 //    @State private var selectedNumber: Int = 25
@@ -136,6 +133,17 @@ struct ContentView: View {
         .accentColor(.blue)
         .onAppear {
             pokemonList = loadPokemonList()
+            if let bundleURL = Bundle.main.resourceURL {
+                           do {
+                               let files = try FileManager.default.contentsOfDirectory(at: bundleURL, includingPropertiesForKeys: nil)
+                               print("Files in widget bundle:")
+                               files.forEach { print($0.lastPathComponent) }
+                           } catch {
+                               print("Failed to read bundle directory: \(error)")
+                           }
+                       } else {
+                           print("Failed to locate bundle resource URL")
+                       }
             loadGIF(for: selectedId)
         }
         
