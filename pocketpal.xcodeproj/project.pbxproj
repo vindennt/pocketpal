@@ -235,6 +235,7 @@
 				Assets/bwsprite/608.gif,
 				Assets/bwsprite/613.gif,
 				Assets/bwsprite/628.gif,
+				Assets/pokedex.json,
 			);
 			target = 3BFDA9112DF63ABE0075265A /* pocketpalwidgetExtension */;
 		};
