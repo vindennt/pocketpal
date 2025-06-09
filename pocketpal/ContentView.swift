@@ -49,7 +49,7 @@ func loadPokemonList() -> [Pokemon] {
           let pokemons = try? JSONDecoder().decode([Pokemon].self, from: data) else {
         return []
     }
-    return pokemons.filter { $0.id <= 151 }
+    return pokemons.filter { $0.id <= 251 }
 }
 
 struct ContentView: View {
@@ -57,6 +57,7 @@ struct ContentView: View {
     @State private var currentGifID: Int = 25
     @State private var gifData: Data?
     @State private var pokemonList: [Pokemon] = []
+    @State private var showingSearch = false
     
     @AppStorage("selectedId", store: UserDefaults(
         suiteName: "group.com.vindennt.pocketpal")) var selectedId = 25
@@ -109,6 +110,8 @@ struct ContentView: View {
                     }
                 }
 
+              
+                
                 
                 Picker("Select Number", selection: $selectedId) {
                     ForEach(pokemonList) { pokemon in
@@ -125,6 +128,27 @@ struct ContentView: View {
                         WidgetCenter.shared.reloadTimelines(ofKind: "pocketpalwidget")
                     }
                 }
+                
+                Button(action: {
+                    showingSearch = true
+                }) {
+                    HStack {
+                        Image(systemName: "magnifyingglass")
+                        Text("Search Pokédex")
+                    }
+                    .font(.subheadline)
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 10)
+                    .foregroundColor(.blue) // Text and icon color
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 10)
+                            .stroke(Color.blue, lineWidth: 1)  // Outline color and thickness
+                    )
+                }
+                .sheet(isPresented: $showingSearch) {
+                    SearchView(pokemonList: pokemonList, selectedId: $selectedId)
+                }
+
 
             }
             .padding(.horizontal)
@@ -150,6 +174,73 @@ struct ContentView: View {
         .accentColor(.blue)
     }
 }
+
+struct SearchView: View {
+    let pokemonList: [Pokemon]
+    @Binding var selectedId: Int
+    @Environment(\.dismiss) var dismiss
+
+    @State private var searchText: String = ""
+    @State private var debouncedSearchText: String = "" // add delay
+
+    var filteredList: [Pokemon] {
+        guard !debouncedSearchText.isEmpty else {
+            return pokemonList
+        }
+
+        let lowercasedSearch = debouncedSearchText.lowercased()
+
+        let startsWithMatches = pokemonList.filter {
+            $0.name.english.lowercased().hasPrefix(lowercasedSearch)
+        }
+
+        let containsMatches = pokemonList.filter {
+            $0.name.english.lowercased().contains(lowercasedSearch) &&
+            !$0.name.english.lowercased().hasPrefix(lowercasedSearch)
+        }
+
+        return startsWithMatches + containsMatches
+    }
+
+    var body: some View {
+        NavigationView {
+            ScrollViewReader { proxy in
+                List(filteredList) { pokemon in
+                    Button {
+                        selectedId = pokemon.id
+                        dismiss()
+                    } label: {
+                        Text("\(pokemon.id) - \(pokemon.name.english)")
+                    }
+                    .id(pokemon.id)
+                }
+                // Auto scroll to currently selected Id
+                .onAppear {
+                    DispatchQueue.main.async {
+                        proxy.scrollTo(selectedId, anchor: .top)
+                    }
+                }
+                .navigationTitle("Search Pokédex")
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        Button {
+                            dismiss()
+                        } label: {
+                            Label("Back", systemImage: "chevron.left")
+                        }
+                    }
+                }
+                .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always))
+            }
+        }
+        .presentationDragIndicator(.visible)
+        .task(id: searchText) {
+            try? await Task.sleep(nanoseconds: 300_000_000)  // 300ms debounce delay
+            debouncedSearchText = searchText
+        }
+    }
+}
+
 
 #Preview {
     ContentView()
