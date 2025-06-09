@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import WidgetKit
 
 struct TypeStyle {
     let background: Color
@@ -16,8 +17,7 @@ let typeColors: [String: TypeStyle] = [
     "Normal":   TypeStyle(background: .gray.opacity(0.5), foreground: .black),
     "Fire":     TypeStyle(background: .red.opacity(0.8), foreground: .white),
     "Water":    TypeStyle(background: .blue, foreground: .white),
-    "Electric": TypeStyle(background: Color.yellow.opacity(0.9), foreground: .black), // better than yellow
-    "Grass":    TypeStyle(background: Color.green.opacity(0.8), foreground: .white),
+    "Electric": TypeStyle(background: Color.yellow.opacity(0.9), foreground: .black),
     "Ice":      TypeStyle(background: Color.cyan.opacity(0.8), foreground: .black),
     "Fighting": TypeStyle(background: Color(red: 0.8, green: 0.2, blue: 0.2), foreground: .white),
     "Poison":   TypeStyle(background: Color.purple.opacity(0.7), foreground: .white),
@@ -32,6 +32,7 @@ let typeColors: [String: TypeStyle] = [
     "Steel":    TypeStyle(background: Color.gray.opacity(0.7), foreground: .black),
     "Fairy":    TypeStyle(background: Color.pink.opacity(0.6), foreground: .black)
 ]
+
 
 
 struct Pokemon: Codable, Identifiable {
@@ -55,10 +56,13 @@ func loadPokemonList() -> [Pokemon] {
 
 
 struct ContentView: View {
-    @State private var selectedNumber: Int = 25
+//    @State private var selectedNumber: Int = 25
     @State private var currentGifID: Int = 25
     @State private var gifData: Data?
     @State private var pokemonList: [Pokemon] = []
+    
+    @AppStorage("selectedId", store: UserDefaults(
+        suiteName: "group.com.vindennt.pocketpal")) var selectedId = 25
 
     private func loadGIF(for number: Int) {
             let name = String(format: "%03d", number)
@@ -72,7 +76,7 @@ struct ContentView: View {
         }
     
     var selectedPokemon: Pokemon? {
-           pokemonList.first(where: { $0.id == selectedNumber })
+           pokemonList.first(where: { $0.id == selectedId })
        }
     
     var body: some View {
@@ -109,7 +113,7 @@ struct ContentView: View {
                 }
 
                 
-                Picker("Select Number", selection: $selectedNumber) {
+                Picker("Select Number", selection: $selectedId) {
                     ForEach(pokemonList) { pokemon in
                         Text("\(pokemon.id) - \(pokemon.name.english)")
                             .tag(pokemon.id)
@@ -118,9 +122,10 @@ struct ContentView: View {
 //                .pickerStyle(WheelPickerStyle())
                 .frame(height: 120)
                 .clipped()
-                .onChange(of: selectedNumber) { newValue, oldValue in
+                .onChange(of: selectedId) { newValue, oldValue in
                     if newValue != oldValue {
-                        loadGIF(for: selectedNumber)
+                        loadGIF(for: selectedId)
+                        WidgetCenter.shared.reloadTimelines(ofKind: "pocketpalwidget")
                     }
                 }
 
@@ -128,11 +133,10 @@ struct ContentView: View {
             .padding(.horizontal)
         }
     
-        
         .accentColor(.blue)
         .onAppear {
             pokemonList = loadPokemonList()
-            loadGIF(for: selectedNumber)
+            loadGIF(for: selectedId)
         }
         
         .accentColor(.blue)

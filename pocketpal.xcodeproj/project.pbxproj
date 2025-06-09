@@ -249,6 +249,12 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		3BE265252DF66AE200D2FD39 /* bwsprite */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			name = bwsprite;
+			path = pocketpal/Assets/bwsprite;
+			sourceTree = "<group>";
+		};
 		3BFDA9022DF639970075265A /* pocketpal */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
@@ -290,6 +296,7 @@
 		3BFDA8F72DF639970075265A = {
 			isa = PBXGroup;
 			children = (
+				3BE265252DF66AE200D2FD39 /* bwsprite */,
 				3BFDA9022DF639970075265A /* pocketpal */,
 				3BFDA9182DF63ABF0075265A /* pocketpalwidget */,
 				3BFDA9132DF63ABE0075265A /* Frameworks */,
@@ -334,6 +341,7 @@
 				3BFDA9212DF63AC00075265A /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
+				3BE265252DF66AE200D2FD39 /* bwsprite */,
 				3BFDA9022DF639970075265A /* pocketpal */,
 			);
 			name = pocketpal;
@@ -356,6 +364,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
+				3BE265252DF66AE200D2FD39 /* bwsprite */,
 				3BFDA9182DF63ABF0075265A /* pocketpalwidget */,
 			);
 			name = pocketpalwidgetExtension;

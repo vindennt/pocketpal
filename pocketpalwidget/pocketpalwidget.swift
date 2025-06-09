@@ -8,13 +8,21 @@
 import WidgetKit
 import SwiftUI
 
+struct SimpleEntry: TimelineEntry {
+    let date: Date
+    let id: Int
+}
+
 struct Provider: TimelineProvider {
+    
+    let data = DataService()
+    
     func placeholder(in context: Context) -> SimpleEntry {
-        SimpleEntry(date: Date(), emoji: "😀")
+        SimpleEntry(date: Date(), id: data.getId())
     }
 
     func getSnapshot(in context: Context, completion: @escaping (SimpleEntry) -> ()) {
-        let entry = SimpleEntry(date: Date(), emoji: "😀")
+        let entry = SimpleEntry(date: Date(), id: data.getId())
         completion(entry)
     }
 
@@ -25,22 +33,13 @@ struct Provider: TimelineProvider {
         let currentDate = Date()
         for hourOffset in 0 ..< 5 {
             let entryDate = Calendar.current.date(byAdding: .hour, value: hourOffset, to: currentDate)!
-            let entry = SimpleEntry(date: entryDate, emoji: "😀")
+            let entry = SimpleEntry(date: entryDate, id: data.getId())
             entries.append(entry)
         }
 
         let timeline = Timeline(entries: entries, policy: .atEnd)
         completion(timeline)
     }
-
-//    func relevances() async -> WidgetRelevances<Void> {
-//        // Generate a list containing the contexts this widget is relevant in.
-//    }
-}
-
-struct SimpleEntry: TimelineEntry {
-    let date: Date
-    let emoji: String
 }
 
 struct pocketpalwidgetEntryView : View {
@@ -51,8 +50,8 @@ struct pocketpalwidgetEntryView : View {
             Text("Time:")
             Text(entry.date, style: .time)
 
-            Text("Emoji:")
-            Text(entry.emoji)
+            Text("Id:")
+            Text(String(entry.id))
         }
     }
 }
@@ -79,6 +78,6 @@ struct pocketpalwidget: Widget {
 #Preview(as: .systemSmall) {
     pocketpalwidget()
 } timeline: {
-    SimpleEntry(date: .now, emoji: "😀")
-    SimpleEntry(date: .now, emoji: "🤩")
+    SimpleEntry(date: .now, id: 1)
+    SimpleEntry(date: .now, id: 25)
 }
